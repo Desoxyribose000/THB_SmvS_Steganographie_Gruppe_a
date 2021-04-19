@@ -6,6 +6,8 @@
 import csv
 import statistics
 
+from matplotlib import pyplot as plt
+
 
 def __extract_data(filename):
     """Input: filename - name of CSV file from which to extract data
@@ -508,6 +510,27 @@ def check_distribution(stego_data, no_stego_data):
         print(str(i) + ': ' + str((count_digits[i] / total) * 100))
 
 
+def plot_performance(stego_data, no_stego_data):
+    fig = plt.figure(figsize=(60, 10))
+    fig.set_size_inches(10, 10)
+    ax = fig.add_subplot(111, projection='3d')
+
+    ax.set_xlabel("window size")
+    ax.set_ylabel("cutoff multiplier")
+    ax.set_zlabel("accuracy (%)")
+
+    for window_size in range(10, 90, 10):
+        for cutoff in range(1, 10, 1):
+            result_no_stego = test_detection(no_stego_data, window_size, cutoff)
+            result_stego = test_detection(stego_data, window_size, cutoff)
+            performance = calc_performance(result_no_stego, result_stego)
+
+            accuracy = (performance["ProzentTruePos"] + performance["ProzentTrueNegatives"]) / 2
+            ax.scatter(window_size, cutoff, accuracy)
+
+    plt.show()
+
+
 if __name__ == "__main__":
     # data usable for analyisis contains only relevant digits
     # data with 66 rows
@@ -526,7 +549,8 @@ if __name__ == "__main__":
     no_stego_data = get_sliced_clean_data(no_stego_raw_data, 3, 6)
     stego_data = get_sliced_clean_data(stego_raw_data, 3, 6)
 
-    performance_test(stego_data, no_stego_data)
+    plot_performance(stego_data, no_stego_data)
+    # performance_test(stego_data, no_stego_data)
 
     # print('\nDetect Anomaly in No Steganographie Data:')
     # anomaly_found = rolling_detect(no_stego_data, 20)
