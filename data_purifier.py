@@ -531,6 +531,99 @@ def plot_performance(stego_data, no_stego_data):
     plt.show()
 
 
+def print_dection_to_csv(data, window_size, writer, datatype, wanted):
+    """Input: sliced data - list of all entries sliced to [start:end), size of window in rows, multiplicator to trigger alarm
+        function iteraties through given data"""
+    count_digits = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    tested_values = 1
+    result_lst = []
+    total_windows = 0
+
+    s_live_list_digits = []
+
+    # data ist eine Liste aller relevanten Werte in cronologischer Reihenfolge {604,244,951,394, ... }
+    # s_live_list_digits zerlegt diese Liste in eine Liste einelner Ziffern in cronologischer Reihenfolge
+
+    for row in data:
+        for value in row:
+            s_live_list_digits.append(value)
+
+    for value in s_live_list_digits:
+        value = int(value)
+        if value == 0:
+            count_digits[0] += 1
+        if value == 1:
+            count_digits[1] += 1
+        if value == 2:
+            count_digits[2] += 1
+        if value == 3:
+            count_digits[3] += 1
+        if value == 4:
+            count_digits[4] += 1
+        if value == 5:
+            count_digits[5] += 1
+        if value == 6:
+            count_digits[6] += 1
+        if value == 7:
+            count_digits[7] += 1
+        if value == 8:
+            count_digits[8] += 1
+        if value == 9:
+            count_digits[9] += 1
+
+        # zählt jeden einzelnen Wert in der Liste und fügt ihm entsprechend der Ziffer den gezählten hinzu
+
+        # reduce attempts, cutoff low amounts of Data to reduce false positives
+        if tested_values % int(
+                window_size * 3) == 0:
+
+            removed_outlier_first_grade = []
+
+            data_std = statistics.stdev(count_digits)
+            data_mean = statistics.mean(count_digits)
+
+            # clean std and mean of simple outliers because of small samplesize
+            for outlier in count_digits:
+                if outlier > data_mean + data_std:
+                    pass
+                else:
+                    removed_outlier_first_grade.append(outlier)
+
+            clean_data_std = statistics.stdev(removed_outlier_first_grade)
+            clean_data_mean = statistics.mean(removed_outlier_first_grade)
+
+            if datatype == "d":
+                count_digits.append(wanted)
+                writer.writerow(count_digits)
+            else:
+                if datatype == "ms":
+                    writer.writerow([clean_data_mean, clean_data_std, wanted])
+
+            total_windows += 1
+            count_digits = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+        tested_values += 1
+
+
+def create_ml_data(stego_data, no_stego_data):
+    csvfile = open('mean_std.csv', 'w', newline='')
+    header_list = ['clean_data_mean', 'clean_data_std', 'wanted']
+    writer = csv.writer(csvfile, delimiter=',')
+    writer.writerow(header_list)
+
+    print_dection_to_csv(no_stego_data, 20, writer, "ms", False)
+    print_dection_to_csv(stego_data, 20, writer, "ms", True)
+
+    csvfile = open('digits.csv', 'w', newline='')
+    header_list = ['digit_0', 'digit_1', 'digit_2', 'digit_3', 'digit_4',
+                   'digit_5', 'digit_6', 'digit_7', 'digit_8', 'digit_9', 'wanted']
+    writer = csv.writer(csvfile, delimiter=',')
+    writer.writerow(header_list)
+
+    print_dection_to_csv(no_stego_data, 20, writer, "d", False)
+    print_dection_to_csv(stego_data, 20, writer, "d", True)
+
+
 if __name__ == "__main__":
     # data usable for analyisis contains only relevant digits
     # data with 66 rows
@@ -549,7 +642,8 @@ if __name__ == "__main__":
     no_stego_data = get_sliced_clean_data(no_stego_raw_data, 3, 6)
     stego_data = get_sliced_clean_data(stego_raw_data, 3, 6)
 
-    plot_performance(stego_data, no_stego_data)
+    create_ml_data(stego_data, no_stego_data)
+    # plot_performance(stego_data, no_stego_data)
     # performance_test(stego_data, no_stego_data)
 
     # print('\nDetect Anomaly in No Steganographie Data:')
