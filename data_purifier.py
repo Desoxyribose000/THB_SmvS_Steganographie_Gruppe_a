@@ -606,22 +606,62 @@ def print_dection_to_csv(data, window_size, writer, datatype, wanted):
 
 
 def create_ml_data(stego_data, no_stego_data):
-    csvfile = open('mean_std.csv', 'w', newline='')
+    csvfile10 = open('mean_std10.csv', 'w', newline='')
+    csvfile20 = open('mean_std20.csv', 'w', newline='')
+    csvfile30 = open('mean_std30.csv', 'w', newline='')
+    csvfile40 = open('mean_std40.csv', 'w', newline='')
+    csvfile50 = open('mean_std50.csv', 'w', newline='')
+
+    csvFiles = []
+    csvFiles.append(csvfile10)
+    csvFiles.append(csvfile20)
+    csvFiles.append(csvfile30)
+    csvFiles.append(csvfile40)
+    csvFiles.append(csvfile50)
+
     header_list = ['clean_data_mean', 'clean_data_std', 'wanted']
-    writer = csv.writer(csvfile, delimiter=',')
-    writer.writerow(header_list)
 
-    print_dection_to_csv(no_stego_data, 20, writer, "ms", False)
-    print_dection_to_csv(stego_data, 20, writer, "ms", True)
+    writers = []
 
-    csvfile = open('digits.csv', 'w', newline='')
+    for csvfile in csvFiles:
+        writer = csv.writer(csvfile, delimiter=',')
+        writer.writerow(header_list)
+        writers.append(writer)
+
+    i = 10
+    for writer in writers:
+        print_dection_to_csv(no_stego_data, i, writer, "ms", False)
+        print_dection_to_csv(stego_data, i, writer, "ms", True)
+        i += 10
+
+    csvfile10 = open('digits10.csv', 'w', newline='')
+    csvfile20 = open('digits20.csv', 'w', newline='')
+    csvfile30 = open('digits30.csv', 'w', newline='')
+    csvfile40 = open('digits40.csv', 'w', newline='')
+    csvfile50 = open('digits50.csv', 'w', newline='')
+
+    csvFiles = []
+    csvFiles.append(csvfile10)
+    csvFiles.append(csvfile20)
+    csvFiles.append(csvfile30)
+    csvFiles.append(csvfile40)
+    csvFiles.append(csvfile50)
+
     header_list = ['digit_0', 'digit_1', 'digit_2', 'digit_3', 'digit_4',
                    'digit_5', 'digit_6', 'digit_7', 'digit_8', 'digit_9', 'wanted']
-    writer = csv.writer(csvfile, delimiter=',')
-    writer.writerow(header_list)
 
-    print_dection_to_csv(no_stego_data, 20, writer, "d", False)
-    print_dection_to_csv(stego_data, 20, writer, "d", True)
+    writers = []
+
+    for csvfile in csvFiles:
+        writer = csv.writer(csvfile, delimiter=',')
+        writer.writerow(header_list)
+        writers.append(writer)
+
+    i = 10
+    for writer in writers:
+        print_dection_to_csv(no_stego_data, i, writer, "d", False)
+        print_dection_to_csv(stego_data, i, writer, "d", True)
+        i += 10
 
 
 if __name__ == "__main__":
