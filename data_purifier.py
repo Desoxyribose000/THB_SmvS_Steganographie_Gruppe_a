@@ -606,11 +606,11 @@ def print_dection_to_csv(data, window_size, writer, datatype, wanted):
 
 
 def create_ml_data(stego_data, no_stego_data):
-    csvfile10 = open('mean_std10.csv', 'w', newline='')
-    csvfile20 = open('mean_std20.csv', 'w', newline='')
-    csvfile30 = open('mean_std30.csv', 'w', newline='')
-    csvfile40 = open('mean_std40.csv', 'w', newline='')
-    csvfile50 = open('mean_std50.csv', 'w', newline='')
+    csvfile10 = open('3mean_std10.csv', 'w', newline='')
+    csvfile20 = open('3mean_std20.csv', 'w', newline='')
+    csvfile30 = open('3mean_std30.csv', 'w', newline='')
+    csvfile40 = open('3mean_std40.csv', 'w', newline='')
+    csvfile50 = open('3mean_std50.csv', 'w', newline='')
 
     csvFiles = []
     csvFiles.append(csvfile10)
@@ -634,11 +634,11 @@ def create_ml_data(stego_data, no_stego_data):
         print_dection_to_csv(stego_data, i, writer, "ms", True)
         i += 10
 
-    csvfile10 = open('digits10.csv', 'w', newline='')
-    csvfile20 = open('digits20.csv', 'w', newline='')
-    csvfile30 = open('digits30.csv', 'w', newline='')
-    csvfile40 = open('digits40.csv', 'w', newline='')
-    csvfile50 = open('digits50.csv', 'w', newline='')
+    csvfile10 = open('3digits10.csv', 'w', newline='')
+    csvfile20 = open('3digits20.csv', 'w', newline='')
+    csvfile30 = open('3digits30.csv', 'w', newline='')
+    csvfile40 = open('3digits40.csv', 'w', newline='')
+    csvfile50 = open('3digits50.csv', 'w', newline='')
 
     csvFiles = []
     csvFiles.append(csvfile10)
@@ -664,6 +664,35 @@ def create_ml_data(stego_data, no_stego_data):
         i += 10
 
 
+def create_ml_data_single(data, filename, exspected_class: bool):
+    csvfile10 = open(filename + '_10.csv', 'w', newline='')
+    csvfile20 = open(filename + '_20.csv', 'w', newline='')
+    csvfile30 = open(filename + '_30.csv', 'w', newline='')
+    csvfile40 = open(filename + '_40.csv', 'w', newline='')
+    csvfile50 = open(filename + '_50.csv', 'w', newline='')
+
+    csvFiles = []
+    csvFiles.append(csvfile10)
+    csvFiles.append(csvfile20)
+    csvFiles.append(csvfile30)
+    csvFiles.append(csvfile40)
+    csvFiles.append(csvfile50)
+
+    header_list = ['clean_data_mean', 'clean_data_std', 'wanted']
+
+    writers = []
+
+    for csvfile in csvFiles:
+        writer = csv.writer(csvfile, delimiter=',')
+        writer.writerow(header_list)
+        writers.append(writer)
+
+    i = 10
+    for writer in writers:
+        print_dection_to_csv(data, i, writer, "ms", exspected_class)
+        i += 10
+
+
 if __name__ == "__main__":
     # data usable for analyisis contains only relevant digits
     # data with 66 rows
@@ -676,14 +705,23 @@ if __name__ == "__main__":
 
     # data without 66 rows
 
-    no_stego_raw_data = __extract_data('NoStego.csv')
-    stego_raw_data = __extract_data('Stego_high.csv')
+    # no_stego_raw_data = __extract_data('OldTestFiles/NoStego.csv')
+    # stego_raw_data = __extract_data('Stego_high.csv')
 
-    no_stego_data = get_sliced_clean_data(no_stego_raw_data, 3, 6)
-    stego_data = get_sliced_clean_data(stego_raw_data, 3, 6)
+    # no_stego_data = get_sliced_clean_data(no_stego_raw_data, 3, 6)
+    # stego_data = get_sliced_clean_data(stego_raw_data, 3, 6)
 
-    create_ml_data(stego_data, no_stego_data)
+    filename = 'nostego'
+    raw_data = __extract_data(filename + '.csv')
+    data = get_sliced_clean_data(raw_data, 3, 6)
+
+    create_ml_data_single(data, filename, True)
+
+    # check_distribution(stego_data, no_stego_data)
+
+    # create_ml_data(stego_data, no_stego_data)
     # plot_performance(stego_data, no_stego_data)
+
     # performance_test(stego_data, no_stego_data)
 
     # print('\nDetect Anomaly in No Steganographie Data:')
