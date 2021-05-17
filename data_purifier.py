@@ -374,6 +374,25 @@ def performance_test(stego_data, no_stego_data):
     print('False Negatives: ' + str(round(performance["ProzentFalseNegatives"] * 100, 4)) + " %")
 
 
+def performance_test_single(data, exspected):
+    window_size = 10
+    cutoff_mult = 4
+
+    print("Performance: ")
+    for window_size in range(10, 60, 10):
+
+        hits = 0
+        print("\nWS: " + str(window_size) + " CM: " + str(cutoff_mult))
+        result = test_detection(data, window_size, cutoff_mult)
+        for row in result:
+            if row[1] == exspected:
+                hits += 1
+
+        data_total_wind = len(result)
+
+        print("Hitrate: " + str(hits / data_total_wind))
+
+
 def check_distribution(stego_data, no_stego_data):
     no_stego_1_digit = []
     no_stego_2_digit = []
@@ -711,11 +730,13 @@ if __name__ == "__main__":
     # no_stego_data = get_sliced_clean_data(no_stego_raw_data, 3, 6)
     # stego_data = get_sliced_clean_data(stego_raw_data, 3, 6)
 
-    filename = 'nostego'
+    filename = 'stego3'
     raw_data = __extract_data(filename + '.csv')
     data = get_sliced_clean_data(raw_data, 3, 6)
 
-    create_ml_data_single(data, filename, True)
+    performance_test_single(data, True)
+
+    # create_ml_data_single(data, filename, True)
 
     # check_distribution(stego_data, no_stego_data)
 
